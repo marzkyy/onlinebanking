@@ -140,6 +140,7 @@ button:hover, .form button:hover {
 }
 
 .invalid-feedback {
+  color: red;
   font-size: 14px;
   font-weight: 600;
   text-align: left;

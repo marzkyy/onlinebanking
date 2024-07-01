@@ -4,35 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Register - Pesonet by Junmar Pacay</title>
-  <!---Custom CSS File--->
+  <title>Change PIN - Pesonet by Junmar Pacay</title>
   <link rel="stylesheet" th:href="@{/css/style.css}">
-  
 </head>
 <body>
-<div class="container">
+  <div class="container">
     <div class="changepin form">
-        <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
-      <header>Change your PIN</header>
+      <header>
+        <img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/>
+      </header>
+      <h1>Change your PIN</h1>
       <form th:action="@{/changepin}" method="post" th:object="${user}">
-        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="invalid-feedback"></div>
-        <input type="email" name="email" placeholder="Enter your Email" th:value="*{email}" th:errorClass="is-invalid" required><br>
-        <input type="password" name="pin" placeholder="Create a PIN" minlength="4" th:value="*{pin}" required><br>
+        <div th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}" class="invalid-feedback"></div>
+        <input type="password" name="pin" placeholder="Enter your current PIN" minlength="4" th:value="*{pin}" th:errorclass="is-invalid" required><br>
+        <input type="password" name="npin" placeholder="Create a new PIN" minlength="4" th:value="*{npin}" required><br>
         <div th:if="${#fields.hasErrors('rpin')}" th:errors="*{rpin}" class="invalid-feedback"></div>
-        <input type="password" name="rpin" placeholder="Confirm your PIN" minlength="4" th:value="*{rpin}" th:errorClass="is-invalid" required><br>
-        <input type="text" name="name" placeholder="Enter your Name" th:value="*{name}" required><br>
-        <input type="tel" name="number" placeholder="Enter your mobile number" th:value="*{number}" required><br>
-        <button type="submit">Register</button>
-    </form>
+        <input type="password" name="rpin" placeholder="Confirm your new PIN" minlength="4" th:value="*{rpin}" th:errorclass="is-invalid" required><br>
+        <button type="submit">Change PIN</button>
+      </form>
       <div class="signup">
-        <span class="signup">Already have an account?
-            <a href="/login">
-                <label for="check">Login</label>
-            </a>
+        <span class="signup">Cancel change PIN and go back to 
+          <a href="/home">Home</a>
         </span>
       </div>
     </div>
   </div>
-</div>
 </body>
 </html>

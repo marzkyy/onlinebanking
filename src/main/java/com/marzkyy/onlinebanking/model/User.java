@@ -20,7 +20,8 @@ public class User {
     private String name;
     private String number;
     private String pin;
-    private String rpin;
+    private transient String rpin; // Transient field, not persisted
+    private transient String npin; // Transient field, not persisted
 
     // Constructors
     public User() {
@@ -85,6 +86,14 @@ public class User {
         this.rpin = rpin;
     }
 
+    public String getNpin() {
+        return npin;
+    }
+
+    public void setNpin(String npin) {
+        this.npin = npin;
+    }
+
     // Optional: Override toString() for logging and debugging purposes
     @Override
     public String toString() {
@@ -94,7 +103,6 @@ public class User {
                 ", name='" + name + '\'' +
                 ", number='" + number + '\'' +
                 ", pin='" + pin + '\'' +
-                ", rpin='" + rpin + '\'' +
                 '}';
     }
 }

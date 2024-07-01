@@ -52,18 +52,29 @@ public class UserController {
         if(userService.userExists(user.getEmail())){
             bindingResult.addError(new FieldError("user", "email", "Email address already taken."));
         }
-
+    
         // Check if the pin matches
         if(user.getPin() != null && user.getRpin() != null) {
             if(!user.getPin().equals(user.getRpin())){
                 bindingResult.addError(new FieldError("user", "rpin", "PIN must match"));
             }
         }
-
+    
+        // Validate phone number format
+        String phoneNumber = user.getNumber();
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            bindingResult.addError(new FieldError("user", "number", "Phone number is required"));
+        } else if (!phoneNumber.matches("\\+?[0-9()\\s-]+")) {
+            // Adjust the regex pattern as needed to match your phone number format requirements
+            bindingResult.addError(new FieldError("user", "number", "Invalid phone number format"));
+        }
+    
+        // If there are errors, return to the registration page
         if(bindingResult.hasErrors()){
             return "register";
         }
-
+    
+        // Save the user and redirect
         userService.save(user);
         log.info(">> User registered: {}", user);
         return "redirect:/login"; 
@@ -130,4 +141,41 @@ public class UserController {
         // Redirect to login page
         return "redirect:/login";
     }
+
+    @GetMapping("/changepin")
+public String changePin(Model model) {
+    model.addAttribute("user", new User()); // Add an empty user object to the model
+    return "changepin";
+}
+
+@PostMapping("/changepin")
+public String processChangePin(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
+    // Retrieve the currently logged-in user
+    User loggedInUser = (User) session.getAttribute("user");
+
+    if (loggedInUser == null) {
+        return "redirect:/login"; // Redirect to login if no user is logged in
+    }
+
+    // Check if the current PIN is correct
+    if (user.getPin() == null || !loggedInUser.getPin().equals(user.getPin())) {
+        bindingResult.addError(new FieldError("user", "pin", "Current PIN is incorrect"));
+        return "changepin";
+    }
+
+    // Check if the new PIN and confirmation PIN match
+    if (user.getNpin() == null || !user.getNpin().equals(user.getRpin())) {
+        bindingResult.addError(new FieldError("user", "rpin", "New PIN must match confirmation"));
+        return "changepin";
+    }
+
+    // Update the user's PIN
+    loggedInUser.setPin(user.getNpin()); // Set the new PIN
+    userService.save(loggedInUser); // Save the updated user to the database
+
+    log.info(">> User changed PIN: {}", loggedInUser);
+
+    // Redirect to home page or another page after successful PIN change
+    return "redirect:/home";
+}
 }
