@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login & Registration Form</title>
+    <!---Custom CSS File--->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+</head>
+<body>
+<div class="container">
+    <div class="login form">
+        <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
+       
+            <h2>Connect, Pay, and Save Effortlessly</h2>
+            <div class="slogan">Connect and Enjoy Seamless Payments Today!</div>
+            <button onclick="window.location.href='/register';">Create account</button>
+            <button onclick="window.location.href='/login';">Login</button>
+
+        <div class="signup">
+        <span class="slogan">By tapping "Create account" or "Log in" you agree to our
+         <label for="check">Terms</label>
+        </span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

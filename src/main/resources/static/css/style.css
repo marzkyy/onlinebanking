@@ -1,0 +1,146 @@
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+
+/* Apply basic styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Body styles */
+body {
+  min-height: 100vh;
+  width: 100%;
+  background: #009579;
+}
+
+/* Container styles */
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 430px;
+  width: 100%;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Form section styles */
+.container .form {
+  padding: 2rem;
+}
+
+/* Header styles */
+header {
+  padding: 10px; /* Example padding */
+  text-align: center; /* Center align content */
+}
+
+h2 {
+  padding: 10px; /* Example padding */
+  text-align: center; /* Center align content */
+}
+
+.logo {
+  max-width: 100%; /* Ensure the logo does not exceed the width of its container */
+  height: auto; /* Maintain aspect ratio */
+  max-height: 200px; /* Example maximum height */
+}
+
+/* Form header styles */
+.form header {
+  font-size: 2rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Form input styles */
+.form input {
+  height: 60px;
+  width: 100%;
+  padding: 0 15px;
+  font-size: 17px;
+  margin-bottom: 1.3rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+}
+
+.form input:focus {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Link styles inside form */
+.form a {
+  font-size: 16px;
+  color: #009579;
+  text-decoration: none;
+}
+
+.form a:hover {
+  text-decoration: underline;
+}
+
+/* Button styles */
+button, .form button {
+  color: #fff;
+  background: #009579;
+  height: 60px;
+  width: 100%;
+  padding: 0 15px;
+  font-size: 17px;
+  margin-bottom: 1.3rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+}
+
+button:hover, .form button:hover {
+  background: #006653;
+}
+
+/* Signup section styles */
+.signup {
+  font-size: 17px;
+  text-align: center;
+}
+
+.signup label {
+  color: #009579;
+  cursor: pointer;
+}
+
+.signup label:hover {
+  text-decoration: underline;
+}
+
+/* Error message styles */
+.error-message {
+  color: red;
+  display: none;
+}
+
+.username-error {
+  color: red;
+  font-size: 14px;
+  display: none;
+}
+
+/* Slogan styles */
+.slogan {
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.invalid-feedback {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}

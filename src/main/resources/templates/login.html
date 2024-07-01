@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="login form">
+        <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
+        <header>Login to Your Account</header>
+        <form th:action="@{/login}" method="post" th:object="${user}">
+            <div class="form-group">
+                <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="invalid-feedback"></div>
+                <input type="email" name="email" placeholder="Enter your Email" th:value="*{email}" th:errorclass="is-invalid" required>
+            </div>
+            <div class="form-group">
+                <div th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}" class="invalid-feedback"></div>
+                <input type="password" name="pin" placeholder="Enter your PIN" th:value="*{pin}" th:errorclass="is-invalid" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="signup">
+            <span class="signup">Don't have an account?
+                <a href="/register">
+                    <label for="check">Register</label>
+                </a>
+            </span>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
