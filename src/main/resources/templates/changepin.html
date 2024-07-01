@@ -11,10 +11,10 @@
 </head>
 <body>
 <div class="container">
-    <div class="registration form">
+    <div class="changepin form">
         <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
-      <header>Create your account</header>
-      <form th:action="@{/register}" method="post" th:object="${user}">
+      <header>Change your PIN</header>
+      <form th:action="@{/changepin}" method="post" th:object="${user}">
         <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="invalid-feedback"></div>
         <input type="email" name="email" placeholder="Enter your Email" th:value="*{email}" th:errorClass="is-invalid" required><br>
         <input type="password" name="pin" placeholder="Create a PIN" minlength="4" th:value="*{pin}" required><br>

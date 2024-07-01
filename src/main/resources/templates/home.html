@@ -3,16 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Home</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Pesonet by Junmar Pacay</title>
+    <link rel="stylesheet" th:href="@{/css/style2.css}">
 </head>
 <body>
-<div class="container">
-    <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
-    <h1>Welcome, <span th:text="${username}"></span>!</h1>
-    <p>You have successfully logged in.</p>
-    <a href="/logout">Logout</a>
-</div>
+    <div class="container">
+        <header class="header">
+            <div class="user-info">
+                <!-- Profile image and QR code icon removed -->
+                <div class="user-details">
+                    <p class="username" th:text="'Hey, ' + ${username}">Hey, User</p>
+                    <p class="welcome">Welcome back</p>
+                </div>
+            </div>
+            <!-- QR code section removed -->
+        </header>
+        
+        <div class="balance">
+            <h1>$155,804.1</h1>
+        </div>
+
+        <div class="actions">
+            <button class="action-btn deposit">Deposit</button>
+            <button class="action-btn withdraw">Withdraw</button>
+            <button class="action-btn transfer">Transfer</button>
+        </div>
+
+        <div class="transactions">
+            <h2>Transactions</h2>
+            <div class="transaction-date">
+                <select>
+                    <option value="october">October</option>
+                    <!-- Add more months as needed -->
+                </select>
+            </div>
+            <div class="transaction-list">
+                <div class="transaction-item">
+                    <img src="path/to/adam-west.jpg" alt="Adam West" class="transaction-img">
+                    <div class="transaction-details">
+                        <p>Adam West</p>
+                        <p>Received</p>
+                    </div>
+                    <p class="transaction-amount">+$200</p>
+                    <p class="transaction-time">3:25PM</p>
+                </div>
+                <!-- Repeat for other transactions -->
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <button class="nav-btn change-pin">Change Pin</button>
+            <button class="nav-btn logout" th:onclick="window.location.href='/logout'">Log Out</button>
+        </nav>
+    </div>
 </body>
 </html>

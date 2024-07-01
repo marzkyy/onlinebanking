@@ -23,7 +23,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-
 @Controller
 public class UserController {
 
@@ -48,15 +47,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String save(User user, BindingResult bindingResult){
-        //check if the email already taken
+    public String save(@ModelAttribute User user, BindingResult bindingResult){
+        // Check if the email is already taken
         if(userService.userExists(user.getEmail())){
-            bindingResult.addError(new FieldError("user","email","Email address already taken."));
+            bindingResult.addError(new FieldError("user", "email", "Email address already taken."));
         }
 
-        //check if the pin match
-        if(user.getPin() != null && user.getRpin() != null)
-        {
+        // Check if the pin matches
+        if(user.getPin() != null && user.getRpin() != null) {
             if(!user.getPin().equals(user.getRpin())){
                 bindingResult.addError(new FieldError("user", "rpin", "PIN must match"));
             }
@@ -65,8 +63,9 @@ public class UserController {
         if(bindingResult.hasErrors()){
             return "register";
         }
+
         userService.save(user);
-        log.info(">> user : {}", user.toString());
+        log.info(">> User registered: {}", user);
         return "redirect:/login"; 
     }
 
@@ -77,8 +76,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String authenticate(@ModelAttribute User user, BindingResult bindingResult, Model model) {
-        // Check if email is provided
+    public String authenticate(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
+        // Check if email and PIN are provided
         if (user.getEmail() == null || user.getPin() == null) {
             bindingResult.reject("credentials", "Email and PIN are required.");
             return "login";
@@ -87,7 +86,7 @@ public class UserController {
         // Verify if the email exists
         boolean emailExists = userService.userExists(user.getEmail());
         if (!emailExists) {
-            bindingResult.addError(new FieldError("user", "email", "Email does not exists"));
+            bindingResult.addError(new FieldError("user", "email", "Email does not exist"));
             return "login";
         }
 
@@ -96,37 +95,39 @@ public class UserController {
                 .orElse(null);
 
         if (foundUser == null || !foundUser.getPin().equals(user.getPin())) {
-            bindingResult.addError(new FieldError("user", "pin", "Password is incorrect"));
+            bindingResult.addError(new FieldError("user", "pin", "PIN is incorrect"));
             return "login";
         }
 
-        log.info(">> Logged in user : {}", foundUser.toString());
-        model.addAttribute("user", foundUser);
+        log.info(">> Logged in user: {}", foundUser);
+        // Store the user in the session
+        session.setAttribute("user", foundUser);
 
-        // Redirect to a home page or dashboard
+        // Redirect to home page
         return "redirect:/home";
     }
 
     @GetMapping("/home")
-    public String home(Model model) {
-        // For example, adding a dummy user to the model.
-        // Ideally, this should come from a session or authentication context.
-        User dummyUser = new User();
-        dummyUser.setName("User"); // Replace this with actual user data
-        model.addAttribute("user", dummyUser);
+    public String home(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            model.addAttribute("username", user.getName()); // Assuming getName() returns the user's name
+        } else {
+            model.addAttribute("username", "Guest"); // Fallback if no user is found in the session
+        }
         return "home";
     }
 
+ 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-public String logout(HttpServletRequest request, HttpServletResponse response) {
-    // Invalidate the session
-    HttpSession session = request.getSession(false);
-    if (session != null) {
-        session.invalidate();
-    }
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        // Invalidate the session
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
 
-    // Redirect to login page or any other page
-    return "redirect:/login";
-}
-  
+        // Redirect to login page
+        return "redirect:/login";
+    }
 }
