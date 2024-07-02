@@ -1,7 +1,10 @@
 package com.marzkyy.onlinebanking.controller;
 
-import org.slf4j.LoggerFactory;
+import com.marzkyy.onlinebanking.model.Balance;
+import com.marzkyy.onlinebanking.model.User;
+import com.marzkyy.onlinebanking.service.UserService;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
@@ -9,19 +12,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.marzkyy.onlinebanking.model.User;
-import com.marzkyy.onlinebanking.service.UserService;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import java.math.BigDecimal;
 
 @Controller
 public class UserController {
@@ -41,8 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public String register(@ModelAttribute User user, Model model) {
-        model.addAttribute("user", user);
+    public String register(@ModelAttribute User user) {
         return "register";
     }
 
@@ -65,7 +61,6 @@ public class UserController {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             bindingResult.addError(new FieldError("user", "number", "Phone number is required"));
         } else if (!phoneNumber.matches("\\+?[0-9()\\s-]+")) {
-            // Adjust the regex pattern as needed to match your phone number format requirements
             bindingResult.addError(new FieldError("user", "number", "Invalid phone number format"));
         }
     
@@ -75,14 +70,13 @@ public class UserController {
         }
     
         // Save the user and redirect
-        userService.save(user);
-        log.info(">> User registered: {}", user);
+        User savedUser = userService.save(user);
+        log.info(">> User registered: {}", savedUser);
         return "redirect:/login"; 
     }
 
     @GetMapping("/login")
-    public String login(@ModelAttribute User user, Model model) {
-        model.addAttribute("user", user);
+    public String login(@ModelAttribute User user) {
         return "login";
     }
 
@@ -118,18 +112,26 @@ public class UserController {
         return "redirect:/home";
     }
 
-    @GetMapping("/home")
-    public String home(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            model.addAttribute("username", user.getName()); // Assuming getName() returns the user's name
+@GetMapping("/home")
+public String home(HttpSession session, Model model) {
+    User user = (User) session.getAttribute("user");
+    if (user != null) {
+        // Access the balance through the User object
+        Balance userBalance = user.getBalance();
+        if (userBalance != null) {
+            model.addAttribute("username", user.getName());
+            model.addAttribute("balance", userBalance.getAmount()); // Assuming getAmount() method in Balance class
         } else {
-            model.addAttribute("username", "Guest"); // Fallback if no user is found in the session
+            model.addAttribute("username", user.getName());
+            model.addAttribute("balance", BigDecimal.ZERO); // Set to zero if balance is null
         }
-        return "home";
+    } else {
+        model.addAttribute("username", "Guest");
+        model.addAttribute("balance", BigDecimal.ZERO); // Set to zero or appropriate default
     }
+    return "home";
+}
 
- 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         // Invalidate the session
@@ -143,39 +145,42 @@ public class UserController {
     }
 
     @GetMapping("/changepin")
-public String changePin(Model model) {
-    model.addAttribute("user", new User()); // Add an empty user object to the model
-    return "changepin";
-}
-
-@PostMapping("/changepin")
-public String processChangePin(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
-    // Retrieve the currently logged-in user
-    User loggedInUser = (User) session.getAttribute("user");
-
-    if (loggedInUser == null) {
-        return "redirect:/login"; // Redirect to login if no user is logged in
-    }
-
-    // Check if the current PIN is correct
-    if (user.getPin() == null || !loggedInUser.getPin().equals(user.getPin())) {
-        bindingResult.addError(new FieldError("user", "pin", "Current PIN is incorrect"));
+    public String changePin(Model model) {
+        model.addAttribute("user", new User()); // Add an empty user object to the model
         return "changepin";
     }
 
-    // Check if the new PIN and confirmation PIN match
-    if (user.getNpin() == null || !user.getNpin().equals(user.getRpin())) {
-        bindingResult.addError(new FieldError("user", "rpin", "New PIN must match confirmation"));
-        return "changepin";
+    @PostMapping("/changepin")
+    public String processChangePin(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
+        // Retrieve the currently logged-in user
+        User loggedInUser = (User) session.getAttribute("user");
+
+        if (loggedInUser == null) {
+            return "redirect:/login"; // Redirect to login if no user is logged in
+        }
+
+        // Check if the current PIN is correct
+        if (user.getPin() == null || !loggedInUser.getPin().equals(user.getPin())) {
+            bindingResult.addError(new FieldError("user", "pin", "Current PIN is incorrect"));
+            return "changepin";
+        }
+
+        // Check if the new PIN and confirmation PIN match
+        if (user.getNpin() == null || !user.getNpin().equals(user.getRpin())) {
+            bindingResult.addError(new FieldError("user", "rpin", "New PIN must match confirmation"));
+            return "changepin";
+        }
+
+        // Update the user's PIN
+        loggedInUser.setPin(user.getNpin()); // Set the new PIN
+        userService.save(loggedInUser); // Save the updated user to the database
+
+        // Update the balance if needed
+        userService.createOrUpdateBalance(loggedInUser.getId(), new BigDecimal("1000.00")); // Example balance
+
+        log.info(">> User changed PIN: {}", loggedInUser);
+
+        // Redirect to home page or another page after successful PIN change
+        return "redirect:/home";
     }
-
-    // Update the user's PIN
-    loggedInUser.setPin(user.getNpin()); // Set the new PIN
-    userService.save(loggedInUser); // Save the updated user to the database
-
-    log.info(">> User changed PIN: {}", loggedInUser);
-
-    // Redirect to home page or another page after successful PIN change
-    return "redirect:/home";
-}
 }

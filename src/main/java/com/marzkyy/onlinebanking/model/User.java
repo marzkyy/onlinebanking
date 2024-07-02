@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 
@@ -22,6 +23,9 @@ public class User {
     private String pin;
     private transient String rpin; // Transient field, not persisted
     private transient String npin; // Transient field, not persisted
+
+    @OneToOne(mappedBy = "user")
+    private Balance balance;
 
     // Constructors
     public User() {
@@ -92,6 +96,14 @@ public class User {
 
     public void setNpin(String npin) {
         this.npin = npin;
+    }
+
+    public Balance getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Balance balance) {
+        this.balance = balance;
     }
 
     // Optional: Override toString() for logging and debugging purposes
