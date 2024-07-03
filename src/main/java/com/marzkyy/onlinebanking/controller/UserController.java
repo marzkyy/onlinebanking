@@ -44,33 +44,29 @@ public class UserController {
 
     @PostMapping("/register")
     public String save(@ModelAttribute User user, BindingResult bindingResult){
-        // Check if the email is already taken
         if(userService.userExists(user.getEmail())){
             bindingResult.addError(new FieldError("user", "email", "Email address already taken."));
         }
-    
-        // Check if the pin matches
+
         if(user.getPin() != null && user.getRpin() != null) {
             if(!user.getPin().equals(user.getRpin())){
                 bindingResult.addError(new FieldError("user", "rpin", "PIN must match"));
             }
         }
-    
-        // Validate phone number format
+
         String phoneNumber = user.getNumber();
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             bindingResult.addError(new FieldError("user", "number", "Phone number is required"));
         } else if (!phoneNumber.matches("\\+?[0-9()\\s-]+")) {
             bindingResult.addError(new FieldError("user", "number", "Invalid phone number format"));
         }
-    
-        // If there are errors, return to the registration page
+
         if(bindingResult.hasErrors()){
             return "register";
         }
-    
-        // Save the user and redirect
+
         User savedUser = userService.save(user);
+
         log.info(">> User registered: {}", savedUser);
         return "redirect:/login"; 
     }
@@ -82,105 +78,68 @@ public class UserController {
 
     @PostMapping("/login")
     public String authenticate(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
-        // Check if email and PIN are provided
         if (user.getEmail() == null || user.getPin() == null) {
             bindingResult.reject("credentials", "Email and PIN are required.");
             return "login";
         }
 
-        // Verify if the email exists
         boolean emailExists = userService.userExists(user.getEmail());
         if (!emailExists) {
             bindingResult.addError(new FieldError("user", "email", "Email does not exist"));
             return "login";
         }
 
-        // Retrieve user by email and verify PIN
-        User foundUser = userService.findUserByEmail(user.getEmail())
-                .orElse(null);
-
+        User foundUser = userService.findUserByEmail(user.getEmail()).orElse(null);
         if (foundUser == null || !foundUser.getPin().equals(user.getPin())) {
             bindingResult.addError(new FieldError("user", "pin", "PIN is incorrect"));
             return "login";
         }
 
         log.info(">> Logged in user: {}", foundUser);
-        // Store the user in the session
         session.setAttribute("user", foundUser);
 
-        // Redirect to home page
         return "redirect:/home";
     }
 
-@GetMapping("/home")
-public String home(HttpSession session, Model model) {
-    User user = (User) session.getAttribute("user");
-    if (user != null) {
-        // Access the balance through the User object
-        Balance userBalance = user.getBalance();
-        if (userBalance != null) {
-            model.addAttribute("username", user.getName());
-            model.addAttribute("balance", userBalance.getAmount()); // Assuming getAmount() method in Balance class
-        } else {
-            model.addAttribute("username", user.getName());
-            model.addAttribute("balance", BigDecimal.ZERO); // Set to zero if balance is null
-        }
-    } else {
-        model.addAttribute("username", "Guest");
-        model.addAttribute("balance", BigDecimal.ZERO); // Set to zero or appropriate default
-    }
-    return "home";
-}
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        // Invalidate the session
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
-
-        // Redirect to login page
         return "redirect:/login";
     }
 
     @GetMapping("/changepin")
     public String changePin(Model model) {
-        model.addAttribute("user", new User()); // Add an empty user object to the model
+        model.addAttribute("user", new User());
         return "changepin";
     }
 
     @PostMapping("/changepin")
     public String processChangePin(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
-        // Retrieve the currently logged-in user
         User loggedInUser = (User) session.getAttribute("user");
 
         if (loggedInUser == null) {
-            return "redirect:/login"; // Redirect to login if no user is logged in
+            return "redirect:/login";
         }
 
-        // Check if the current PIN is correct
         if (user.getPin() == null || !loggedInUser.getPin().equals(user.getPin())) {
             bindingResult.addError(new FieldError("user", "pin", "Current PIN is incorrect"));
             return "changepin";
         }
 
-        // Check if the new PIN and confirmation PIN match
         if (user.getNpin() == null || !user.getNpin().equals(user.getRpin())) {
             bindingResult.addError(new FieldError("user", "rpin", "New PIN must match confirmation"));
             return "changepin";
         }
 
-        // Update the user's PIN
-        loggedInUser.setPin(user.getNpin()); // Set the new PIN
-        userService.save(loggedInUser); // Save the updated user to the database
-
-        // Update the balance if needed
-        userService.createOrUpdateBalance(loggedInUser.getId(), new BigDecimal("1000.00")); // Example balance
+        loggedInUser.setPin(user.getNpin());
+        userService.save(loggedInUser);
 
         log.info(">> User changed PIN: {}", loggedInUser);
 
-        // Redirect to home page or another page after successful PIN change
         return "redirect:/home";
     }
 }

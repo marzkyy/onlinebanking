@@ -20,7 +20,7 @@ public class Balance {
     private BigDecimal amount;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     // Constructors
