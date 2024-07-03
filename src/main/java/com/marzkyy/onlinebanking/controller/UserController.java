@@ -1,13 +1,14 @@
 package com.marzkyy.onlinebanking.controller;
 
+import com.marzkyy.onlinebanking.dto.UserDTO;
 import com.marzkyy.onlinebanking.model.Balance;
 import com.marzkyy.onlinebanking.model.User;
 import com.marzkyy.onlinebanking.service.UserService;
+import com.marzkyy.onlinebanking.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,15 +20,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Controller
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     public UserController(UserService userService){
@@ -40,10 +44,24 @@ public class UserController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
-        @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    @GetMapping("/users")
+    public List<UserDTO> getUsers() {
+        return userRepository.findUserDTOs();
+    }
+
+    @GetMapping("/users/{id}")
+    @ResponseBody
+    public Optional<User> getUserById(@PathVariable Long id) {
+        return userRepository.findById(id);
+    }
+
+    @GetMapping("/users/search")
+    @ResponseBody
+    public List<UserDTO> searchUsers(@RequestParam("term") String term) {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getEmail().toLowerCase().contains(term.toLowerCase()))
+                .map(user -> new UserDTO(user.getId(), user.getEmail()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/register")

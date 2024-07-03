@@ -6,30 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Cash Transfer - Pesonet by Junmar Pacay</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@taoson/jquery-autocomplete/jquery.autocomplete.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@taoson/jquery-autocomplete/jquery.autocomplete.min.css">
-    <script>
-        $(document).ready(function() {
-            $.ajax({
-                url: '/api/users',
-                method: 'GET',
-                success: function(data) {
-                    var userList = data.map(user => ({
-                        value: user.accountNumber,
-                        label: `${user.accountNumber} - ${user.name}`
-                    }));
-
-                    $('#recipientAccountNumber').autocomplete({
-                        lookup: userList,
-                        onSelect: function (suggestion) {
-                            $('#recipientAccountNumber').val(suggestion.value);
-                        }
-                    });
-                }
-            });
-        });
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script th:src="@{/js/script.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -37,14 +17,17 @@
         <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
         <header>Cash Transfer</header>
         <form th:action="@{/cash-transfer}" method="post" th:object="${transaction}">
-            <!-- Display any validation errors for the amount field -->
+            <!-- Display validation errors for the amount field -->
             <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="invalid-feedback"></div>
-            <input type="number" min="0" step="0.01" name="amount" placeholder="Enter amount to transfer" th:field="*{amount}" th:errorClass="is-invalid" required><br>
+            <input type="number" min="0" step="0.01" name="amount" placeholder="Enter amount to transfer" th:field="*{amount}" th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''" required><br>
 
-            <!-- Display any validation errors for the recipientAccountNumber field -->
+            <!-- Display validation errors for the recipient email field -->
             <div th:if="${#fields.hasErrors('transferTo')}" th:errors="*{transferTo}" class="invalid-feedback"></div>
-            <input type="text" id="recipientAccountNumber" name="transferTo" placeholder="Enter recipient account number or name" th:field="*{transferTo}" th:errorClass="is-invalid" required><br>
+            <input type="text" id="recipientAccountNumber" name="recipientAccountNumber" placeholder="Enter recipient email" th:classappend="${#fields.hasErrors('transferTo')} ? 'is-invalid' : ''" required><br>
+            <input type="hidden" id="recipientAccountId" name="transferTo" th:field="*{transferTo}"> <!-- Hidden input field for user ID -->
 
+            <!-- Display validation errors for the transaction name field -->
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="invalid-feedback"></div>
             <input type="text" name="name" placeholder="Enter transaction name" th:field="*{name}"><br>
             
             <button type="submit">Transfer</button>

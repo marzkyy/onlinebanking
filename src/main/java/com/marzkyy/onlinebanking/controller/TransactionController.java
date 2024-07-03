@@ -133,7 +133,7 @@ public class TransactionController {
 
         // Validate recipient
         if (transaction.getTransferTo() == null || transaction.getTransferTo().getId() == null) {
-            bindingResult.addError(new FieldError("transaction", "transferTo", "Recipient must be specified."));
+            bindingResult.addError(new FieldError("transaction", "transferTo", "Recipient email was not found."));
         }
 
         // Validate that recipient is not the same as sender
