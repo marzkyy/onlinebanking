@@ -64,4 +64,48 @@ public class TransactionController {
         // Redirect to home page or another page after successful cash-in
         return "redirect:/home";
     }
+
+    // Method to display cash-out form
+    @GetMapping("/cash-out")
+    public String cashOutForm(Model model) {
+        model.addAttribute("transaction", new Transaction());
+        return "cash-out";
+    }
+
+    // Method to process cash-out
+    @PostMapping("/cash-out")
+    public String processCashOut(@ModelAttribute Transaction transaction, BindingResult bindingResult, HttpSession session) {
+        // Retrieve the currently logged-in user
+        User loggedInUser = (User) session.getAttribute("user");
+
+        if (loggedInUser == null) {
+            return "redirect:/login"; // Redirect to login if no user is logged in
+        }
+
+        // Validate cash-out amount
+        if (transaction.getAmount() == null || transaction.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            bindingResult.addError(new FieldError("transaction", "amount", "Cash-out amount must be greater than zero."));
+        }
+
+
+        // Process the cash-out
+              
+        // Set the user for the transaction
+        transaction.setUser(loggedInUser);
+
+        try {
+            // Process the cash-out
+            transactionService.processCashOut(transaction);
+            log.info(">> Cash-out processed: {}", transaction);
+        } catch (RuntimeException e) {
+            // Handle the exception and add an error message
+            bindingResult.rejectValue("amount", "insufficient.funds", e.getMessage());
+            return "cash-out";
+        }
+
+        log.info(">> Cash-out processed: {}", transaction);
+
+        // Redirect to home page or another page after successful cash-out
+        return "redirect:/home";
+    }
 }

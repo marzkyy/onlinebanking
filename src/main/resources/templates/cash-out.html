@@ -4,25 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Cash In - Pesonet by Junmar Pacay</title>
+  <title>Cash Out - Pesonet by Junmar Pacay</title>
   <!---Custom CSS File--->
   <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 <div class="container">
-    <div class="cash-in form">
+    <div class="cash-out form">
         <header><img src="img/pesonet_logo.png" th:src="@{/img/pesonet_logo.png}" alt="Logo" class="logo"/></header>
-        <header>Cash In</header>
-        <form th:action="@{/cash-in}" method="post" th:object="${transaction}">
+        <header>Cash Out</header>
+        <form th:action="@{/cash-out}" method="post" th:object="${transaction}">
             <!-- Display any validation errors for the amount field -->
             <div th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}" class="invalid-feedback"></div>
-            <input type="number" min="0" max="50000" step="0.01" name="amount" placeholder="Enter amount to cash in" th:value="*{amount}" th:errorClass="is-invalid" required><br>
+            <input type="number" min="0" max="50000" step="0.01" name="amount" placeholder="Enter amount to cash out" th:value="*{amount}" th:errorClass="is-invalid" required><br>
             
             <!-- Display any validation errors for the name field -->
             <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="invalid-feedback"></div>
             <input type="text" name="name" placeholder="Enter transaction name" th:value="*{name}" th:errorClass="is-invalid" required><br>
             
-            <button type="submit">Cash In</button>
+            <button type="submit">Cash Out</button>
         </form>
         <div class="back">
             <a href="/home">

@@ -42,4 +42,27 @@ public class TransactionService {
         // Save the transaction
         saveTransaction(transaction);
     }
+
+    @Transactional
+    public void processCashOut(Transaction transaction) {
+        // Retrieve the user from the database
+        User user = userRepository.findById(transaction.getUser().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Validate sufficient funds
+        BigDecimal currentBalance = user.getBalance().getAmount();
+        if (transaction.getAmount().compareTo(currentBalance) > 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        // Update user's balance
+        BigDecimal newBalance = currentBalance.subtract(transaction.getAmount());
+        user.getBalance().setAmount(newBalance);
+
+        // Save the updated user
+        userRepository.save(user);
+
+        // Save the transaction
+        saveTransaction(transaction);
+    }
 }
