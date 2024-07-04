@@ -36,12 +36,10 @@ body {
 
 /* Header styles */
 header {
-  padding: 10px; /* Example padding */
   text-align: center; /* Center align content */
 }
 
-h2 {
-  padding: 10px; /* Example padding */
+h3 {
   text-align: center; /* Center align content */
 }
 
