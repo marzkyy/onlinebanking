@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesonet by Junmar Pacay</title>
     <link rel="stylesheet" th:href="@{/css/style2.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
         <header class="header">
             <div class="user-info">
-                <!-- Profile image and QR code icon removed -->
                 <div class="user-details">
                     <p class="username" th:text="'Hey, ' + ${username}">Hey, User</p>
                     <p class="welcome">Welcome back</p>
                 </div>
             </div>
-            <!-- QR code section removed -->
         </header>
         
         <div class="balance">
@@ -31,30 +30,69 @@
 
         <div class="transactions">
             <h2>Transactions</h2>
-            <div class="transaction-date">
-                <select>
-                    <option value="october">October</option>
-                    <!-- Add more months as needed -->
-                </select>
-            </div>
-            <div class="transaction-list">
-                <div class="transaction-item">
-                    <img src="path/to/adam-west.jpg" alt="Adam West" class="transaction-img">
-                    <div class="transaction-details">
-                        <p>Adam West</p>
-                        <p>Received</p>
-                    </div>
-                    <p class="transaction-amount">+$200</p>
-                    <p class="transaction-time">3:25PM</p>
-                </div>
-                <!-- Repeat for other transactions -->
-            </div>
+            <div class="transaction-list-wrapper"> <!-- Add this wrapper div -->
+                <table id="transaction-table" class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Date/Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be added by JavaScript -->
+                    </tbody>
+                </table>
+            </div> <!-- Close the wrapper div -->
         </div>
+        
 
         <nav class="bottom-nav">
-            <button class="nav-btn change-pin" th:onclick="window.location.href='/changepin'">Change Pin</button>
-            <button class="nav-btn logout" th:onclick="window.location.href='/logout'">Log Out</button>
+            <button class="nav-btn change-pin" onclick="window.location.href='/changepin'">Change Pin</button>
+            <button class="nav-btn logout" onclick="window.location.href='/logout'">Log Out</button>
         </nav>
     </div>
+
+    <!-- Hidden input field to store userId -->
+    <input type="hidden" id="userId" th:value="${userId}" />
+
+    <script>
+        $(document).ready(function() {
+            // Get userId from the hidden input field
+            var userId = $('#userId').val();
+    
+            // Fetch transactions
+            $.ajax({
+                url: '/transactions/user/' + userId,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    var tableBody = $('#transaction-table tbody');
+                    tableBody.empty();
+                    
+                    data.forEach(function(transaction) {
+                        var amountClass;
+                        
+                        // Determine class based on description
+                        if (transaction.description.startsWith('Sent') || transaction.description.startsWith('Cash Out')) {
+                            amountClass = 'transaction-amount-negative'; // Red color for debits
+                        } else {
+                            amountClass = 'transaction-amount-positive'; // Green color for credits
+                        }
+                        
+                        var row = $('<tr></tr>');
+                        row.append('<td>' + transaction.description + '</td>');
+                        row.append('<td class="' + amountClass + '">' + transaction.amount.toFixed(2) + '</td>'); // Display amount with two decimal places
+                        row.append('<td>' + new Date(transaction.dateTime).toLocaleString() + '</td>'); // Corrected to dateTime
+                        tableBody.append(row);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to fetch transactions:', error);
+                }
+            });
+        });
+    </script>
+    
 </body>
 </html>

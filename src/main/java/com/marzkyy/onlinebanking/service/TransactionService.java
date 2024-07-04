@@ -11,23 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TransactionService {
 
-    @Autowired
     private final TransactionRepository transactionRepository;
-
-    @Autowired
     private final UserRepository userRepository;
-    
-    @Autowired
-    private BalanceRepository balanceRepository;
+    private final BalanceRepository balanceRepository;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository) {
+    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, BalanceRepository balanceRepository) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
+        this.balanceRepository = balanceRepository;
     }
 
     public void saveTransaction(Transaction transaction) {
@@ -62,7 +59,6 @@ public class TransactionService {
         userRepository.save(user);
         saveTransaction(transaction);
     }
-
 
     @Transactional
     public void processCashTransfer(Transaction transaction) {
@@ -101,7 +97,12 @@ public class TransactionService {
         saveTransaction(transaction);
     }
 
+    // Method to find transactions by user ID
+    public List<Transaction> findTransactionsByUserId(Long userId) {
+        return transactionRepository.findByUserId(userId);
+    }
 
-
-  
+    public List<Transaction> getTransactionsForUser(Long userId) {
+        return transactionRepository.findTransactionsForUser(userId);
+    }
 }

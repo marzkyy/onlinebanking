@@ -4,9 +4,12 @@ import com.marzkyy.onlinebanking.model.Transaction;
 import com.marzkyy.onlinebanking.model.User;
 import com.marzkyy.onlinebanking.service.TransactionService;
 import com.marzkyy.onlinebanking.service.UserService;
+import com.marzkyy.onlinebanking.dto.TransactionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
+import java.util.stream.Collectors;
+import java.util.List;
 
 @Controller
 public class TransactionController {
@@ -28,6 +33,74 @@ public class TransactionController {
         this.transactionService = transactionService;
         this.userService = userService;
     }
+
+    @GetMapping("transactions/user/{userId}")
+    @ResponseBody
+    public ResponseEntity<List<TransactionDTO>> getTransactionsForUser(@PathVariable Long userId) {
+        try {
+            List<Transaction> transactions = transactionService.getTransactionsForUser(userId);
+            List<TransactionDTO> transactionDTOs = transactions.stream()
+                    .map(transaction -> convertToDTO(transaction, userId))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(transactionDTOs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    private TransactionDTO convertToDTO(Transaction transaction, Long userId) {
+        String description = getTransactionDescription(transaction, userId);
+        BigDecimal amount = getTransactionAmount(transaction, userId);
+        String dateTime = transaction.getDate().toString(); // Format if necessary
+        return new TransactionDTO(description, amount, dateTime);
+    }
+    
+    
+    
+    private String getTransactionDescription(Transaction transaction, Long userId) {
+        if (transaction.getTransferFrom() != null && transaction.getTransferFrom().getId().equals(userId)) {
+            return "Sent to " + transaction.getTransferTo().getName();
+        } else if (transaction.getTransferTo() != null && transaction.getTransferTo().getId().equals(userId)) {
+            return "Received from " + transaction.getTransferFrom().getName();
+        } else {
+            return transaction.getName(); // Cash In or Cash Out
+        }
+    }
+    
+
+    private BigDecimal getTransactionAmount(Transaction transaction, Long userId) {
+        // Check if the transaction involves the user as the sender
+        if (transaction.getTransferFrom() != null && transaction.getTransferFrom().getId().equals(userId)) {
+            // Sent: Amount should be negative
+            return transaction.getAmount().negate();
+        }
+        
+        // Check if the transaction involves the user as the receiver
+        if (transaction.getTransferTo() != null && transaction.getTransferTo().getId().equals(userId)) {
+            // Received: Amount should be positive
+            return transaction.getAmount();
+        }
+        
+        // Handle transactions that do not involve the user directly
+        if (transaction.getTransferFrom() == null && transaction.getTransferTo() == null) {
+            // Check if the transaction name matches "Cash In" or "Cash Out"
+            // Use equals method for string comparison
+            if ("Cash In".equals(transaction.getName())) {
+                return transaction.getAmount();
+            } else if ("Cash Out".equals(transaction.getName())) {
+                return transaction.getAmount().negate();
+            }
+        }
+        
+        // Default case: Assume that the transaction amount should be negative
+        // This should be reviewed to ensure it fits all scenarios
+        return transaction.getAmount().negate(); 
+    }
+    
+    
+    
+    
+    
+        
 
     // Method to display cash-in form
     @GetMapping("/cash-in")

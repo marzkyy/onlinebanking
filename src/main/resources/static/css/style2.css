@@ -133,3 +133,49 @@ body {
     font-size: 1.2em;
     cursor: pointer;
 }
+/* Container for transactions and scrolling */
+.transactions {
+    padding: 20px;
+}
+
+.transactions h2 {
+    margin: 0;
+    padding-bottom: 10px;
+}
+
+/* Wrapper for transaction table to enable scrolling */
+.transaction-list-wrapper {
+    max-height: 400px; /* Maximum height for scrolling */
+    min-height: 300px; /* Minimum height to ensure consistency */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    width: 100%; /* Ensure it uses the full width of the container */
+    border: 1px solid #ddd; /* Optional: Add border for clarity */
+    border-radius: 5px; /* Optional: Add rounded corners for a better look */
+    background-color: #fff; /* Optional: Add background color */
+}
+
+/* Transaction table styling */
+.transaction-table {
+    width: 100%; /* Ensure it uses the full width of the wrapper */
+    border-collapse: collapse; /* Collapse borders for better appearance */
+}
+
+.transaction-table th, .transaction-table td {
+    border: 1px solid #ddd; /* Add border for clarity */
+    padding: 8px; /* Add padding for better readability */
+    text-align: left; /* Align text to the left */
+}
+
+.transaction-table th {
+    background-color: #f4f4f4; /* Light background for headers */
+}
+
+/* Styles for transaction amount */
+.transaction-amount-positive {
+    color: green;
+}
+
+.transaction-amount-negative {
+    color: red;
+}

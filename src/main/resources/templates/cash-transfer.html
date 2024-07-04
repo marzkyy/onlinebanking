@@ -28,7 +28,7 @@
 
             <!-- Display validation errors for the transaction name field -->
             <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="invalid-feedback"></div>
-            <input type="text" name="name" placeholder="Enter transaction name" th:field="*{name}"><br>
+            <input type="hidden" name="name" value="Transfer"><br>
             
             <button type="submit">Transfer</button>
         </form>
