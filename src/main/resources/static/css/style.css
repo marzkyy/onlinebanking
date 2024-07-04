@@ -46,7 +46,7 @@ h3 {
 .logo {
   max-width: 100%; /* Ensure the logo does not exceed the width of its container */
   height: auto; /* Maintain aspect ratio */
-  max-height: 200px; /* Example maximum height */
+  max-height: 180px; /* Example maximum height */
 }
 
 /* Form header styles */

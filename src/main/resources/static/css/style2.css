@@ -18,6 +18,7 @@ body {
     overflow: hidden;
     width: 100%;
     max-width: 430px; /* Updated width from style.css */
+    max-height: 800px
 }
 
 /* Existing styles */
@@ -25,7 +26,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
 }
 
 .user-info {
@@ -49,7 +50,7 @@ body {
 
 .balance {
     text-align: center;
-    padding: 20px;
+    padding: 5px;
     font-size: 2em;
     font-weight: bold;
 }
@@ -57,7 +58,7 @@ body {
 .actions {
     display: flex;
     justify-content: space-around;
-    padding: 20px;
+    padding: 5px;
 }
 
 .action-btn {
@@ -71,7 +72,7 @@ body {
 }
 
 .transactions {
-    padding: 20px;
+    padding: 5px;
 }
 
 .transactions h2 {
