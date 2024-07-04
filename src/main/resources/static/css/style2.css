@@ -18,7 +18,7 @@ body {
     overflow: hidden;
     width: 100%;
     max-width: 430px; /* Updated width from style.css */
-    max-height: 800px
+    max-height: 780px
 }
 
 /* Existing styles */
@@ -146,7 +146,7 @@ body {
 
 /* Wrapper for transaction table to enable scrolling */
 .transaction-list-wrapper {
-    max-height: 400px; /* Maximum height for scrolling */
+    max-height: 360px; /* Maximum height for scrolling */
     min-height: 300px; /* Minimum height to ensure consistency */
     overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden; /* Prevent horizontal scrolling */
