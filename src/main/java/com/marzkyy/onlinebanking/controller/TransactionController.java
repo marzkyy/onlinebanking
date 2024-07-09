@@ -96,12 +96,6 @@ public class TransactionController {
         return transaction.getAmount().negate(); 
     }
     
-    
-    
-    
-    
-        
-
     // Method to display cash-in form
     @GetMapping("/cash-in")
     public String cashInForm(Model model) {
