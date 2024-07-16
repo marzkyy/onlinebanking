@@ -147,26 +147,35 @@ public class UserController {
     @PostMapping("/changepin")
     public String processChangePin(@ModelAttribute User user, BindingResult bindingResult, HttpSession session) {
         User loggedInUser = (User) session.getAttribute("user");
-
+    
         if (loggedInUser == null) {
             return "redirect:/login";
         }
-
+    
+        // Check if the current PIN is correct
         if (user.getPin() == null || !loggedInUser.getPin().equals(user.getPin())) {
             bindingResult.addError(new FieldError("user", "pin", "Current PIN is incorrect"));
             return "changepin";
         }
-
+    
+        // Check if the new PIN matches the confirmation PIN
         if (user.getNpin() == null || !user.getNpin().equals(user.getRpin())) {
             bindingResult.addError(new FieldError("user", "rpin", "New PIN must match confirmation"));
             return "changepin";
         }
-
+    
+        // Check if the new PIN is different from the current PIN
+        if (user.getNpin().equals(loggedInUser.getPin())) {
+            bindingResult.addError(new FieldError("user", "npin", "New PIN must not be the same as the current PIN"));
+            return "changepin";
+        }
+    
+        // Update the PIN
         loggedInUser.setPin(user.getNpin());
         userService.save(loggedInUser);
-
+    
         log.info(">> User changed PIN: {}", loggedInUser);
-
+    
         return "redirect:/home";
     }
 }

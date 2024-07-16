@@ -17,6 +17,7 @@
       <form th:action="@{/changepin}" method="post" th:object="${user}">
         <div th:if="${#fields.hasErrors('pin')}" th:errors="*{pin}" class="invalid-feedback"></div>
         <input type="password" name="pin" placeholder="Enter your current PIN" minlength="4" th:value="*{pin}" th:errorclass="is-invalid" required><br>
+        <div th:if="${#fields.hasErrors('npin')}" th:errors="*{npin}" class="invalid-feedback"></div>
         <input type="password" name="npin" placeholder="Create a new PIN" minlength="4" th:value="*{npin}" required><br>
         <div th:if="${#fields.hasErrors('rpin')}" th:errors="*{rpin}" class="invalid-feedback"></div>
         <input type="password" name="rpin" placeholder="Confirm your new PIN" minlength="4" th:value="*{rpin}" th:errorclass="is-invalid" required><br>
