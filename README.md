@@ -1,5 +1,10 @@
-Tested on the following platform
+# Tested Platforms
 
+## Java
+
+The following information shows the version of Java used for testing:
+
+```bash
 java --version
 openjdk 18.0.1.1 2022-04-22
 OpenJDK Runtime Environment (build 18.0.1.1+2-6)
@@ -11,4 +16,5 @@ Maven home: /opt/maven
 Java version: 18.0.1.1, vendor: Oracle Corporation, runtime: /opt/jdk-18.0.1.1
 Default locale: en_US, platform encoding: UTF-8
 OS name: "linux", version: "3.10.0-1160.119.1.el7.x86_64", arch: "amd64", family: "unix"
+
 
